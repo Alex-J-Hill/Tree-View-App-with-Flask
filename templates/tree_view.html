@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tree View Example</title>
+  <style>
+    /* CSS styles for the tree view */
+    .tree {
+      padding-left: 20px;
+    }
+
+/* .tree li {
+      list-style-type: none;
+      position: relative;
+    } */
+
+    .tree li::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      left: -10px;
+      border-left: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tree View</h1>
+  <ul id="tree-view" class="tree"></ul>
+
+  <link rel="icon" href="data:;base64,iVBORw0KGg...." />
+
+
+  <script>
+    // Function to render tree view
+    function renderTree(data, element) {
+
+        // Loop through the keys of the data object
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+            var node = data[key];
+
+            // Create a new list item for the master station
+            var li = document.createElement('li');
+            /* li.textContent = node.name; */
+
+              // Create a new span element for the item name
+            var span = document.createElement('span');
+            span.textContent = node.name;
+            li.appendChild(span);
+            
+            //Create new list for the member codes
+            var ul = document.createElement('ul');
+            
+            //Loop through the children and add them ast list items to the member code list
+            for (var i = 0; i < node.children.length; i++) {
+                var childNodeName = node.children[i];
+                var li2 = document.createElement('li');
+                li2.textContent = childNodeName;
+
+                ul.appendChild(li2);
+                console.log(childNodeName);
+            }
+
+            //Add the completed member code list to the master station
+            li.appendChild(ul);
+
+            li.addEventListener('click', function() {
+                this.classList.add('selected');
+            })
+  
+            // Append the list item to the parent element
+            element.appendChild(li);
+            }
+        }
+    }
+
+
+    // Fetch data from Flask app and render tree view
+    fetch('/get_tree_data/')
+      .then(response => response.json())
+      .then(data => {
+        // Call the renderTree function with the JSON data
+        console.log(data);
+        renderTree(data, document.getElementById('tree-view'));
+      })
+      
+      .catch(error => console.error(error));
+  </script>
+</body>
+</html>
